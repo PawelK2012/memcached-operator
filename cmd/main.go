@@ -1,5 +1,5 @@
 /*
-Copyright 2024
+Copyright 2024.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ func main() {
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme: scheme,
-		// MetricsBindAddress:     metricsAddr, https://github.com/operator-framework/operator-sdk/issues/6608
+		// MetricsBindAddress:     metricsAddr,
 		// Port:                   9443,
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
