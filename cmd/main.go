@@ -63,7 +63,7 @@ func main() {
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme: scheme,
-		// MetricsBindAddress:     metricsAddr, https://github.com/operator-framework/operator-sdk/issues/6608
+		// MetricsBindAddress:     metricsAddr,https://github.com/operator-framework/operator-sdk/issues/6608
 		// Port:                   9443,
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
