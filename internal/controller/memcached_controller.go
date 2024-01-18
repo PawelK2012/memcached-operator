@@ -32,7 +32,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	cachev1alpha1 "github.com/PawelK2012/memcached-operator/api/v1alpha1"
+	cachev1beta1 "github.com/PawelK2012/memcached-operator/api/v1beta1"
 )
 
 // MemcachedReconciler reconciles a Memcached object
@@ -56,7 +56,7 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	logger := log.FromContext(ctx)
 
 	// Fetch the Memcached object if it exists
-	memcached := &cachev1alpha1.Memcached{}
+	memcached := &cachev1beta1.Memcached{}
 	err := r.Get(ctx, req.NamespacedName, memcached)
 	if err != nil {
 		if errors.IsNotFound(err) {
@@ -130,11 +130,12 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 // SetupWithManager sets up the controller with the Manager.
 func (r *MemcachedReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&cachev1alpha1.Memcached{}).
+		For(&cachev1beta1.Memcached{}).
 		Complete(r)
 }
 
-func (r *MemcachedReconciler) deploymentForMemcached(m *cachev1alpha1.Memcached) *appsv1.Deployment {
+// deploymentForMemcached returns a memcached Deployment object
+func (r *MemcachedReconciler) deploymentForMemcached(m *cachev1beta1.Memcached) *appsv1.Deployment {
 	ls := labelsForMemcached(m.Name)
 	replicas := m.Spec.Size
 	dep := &appsv1.Deployment{
@@ -165,10 +166,16 @@ func (r *MemcachedReconciler) deploymentForMemcached(m *cachev1alpha1.Memcached)
 			},
 		},
 	}
+	// Check for DisableEvicitons
+	if m.Spec.DisableEvictions {
+		// Append the -M flag to the startup command for the container.
+		dep.Spec.Template.Spec.Containers[0].Command = append(dep.Spec.Template.Spec.Containers[0].Command, "-M")
+	}
 	// Set Memcached instance as the owner and controller
 	ctrl.SetControllerReference(m, dep, r.Scheme)
 	return dep
 }
+
 func labelsForMemcached(name string) map[string]string {
 	return map[string]string{"app": "memcached", "memcached_cr": name}
 }
