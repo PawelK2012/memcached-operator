@@ -5,4 +5,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: docker.io/pawelkaim/memcached-operator
-  newTag: v1.0.0
+  newTag: v2.0.0
